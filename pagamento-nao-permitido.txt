@@ -1,14 +1,14 @@
 Prezado(a) usuário(a),
 
-Gostaríamos de informar que seu pagamento foi rejeitado devido a uma questão de horário. Analisamos as informações fornecidas e identificamos que, nos meses anteriores, você conseguiu realizar os pagamentos nos mesmos horários sem problemas. No entanto, ao analisar os prints que você nos forneceu, notamos que você costuma realizar os pagamentos em média dois minutos antes do encerramento da grade de pagamentos.
+Gostaríamos de informar que seu pagamento foi rejeitado devido a uma questão de horário. Analisamos as informações fornecidas e identificamos que, nos meses anteriores, você conseguia realizar os pagamentos nos mesmos horários sem problemas. No entanto, ao analisar os prints que você nos forneceu, notamos que você costuma realizar os pagamentos em média dois minutos antes do encerramento da grade de pagamentos.
 
-É importante ressaltar que o processamento dos pagamentos é realizado dentro de uma janela de tempo específica, e nossa grade de pagamentos é fechada entre 23:00 e 01:00. Essa medida é necessária para garantir a eficiência e a integridade de nossos sistemas.
+É importante ressaltar que, ao executar os pagamentos antes do fechamento da grade, haverá tempo hábil para o processamento do pagamento. A nossa equipe necessita de tempo para realizar os procedimentos necessários para garantir a eficiência e a integridade de nossos sistemas.
 
 No caso específico do pagamento que foi rejeitado, você o incluiu no dia 19/06/2023 às 22:59:19, sendo autorizado em seguida às 22:59:33. A solicitação para efetivação foi realizada às 22:59:34 do mesmo dia, e o processamento da efetivação foi iniciado às 23:00:01. Infelizmente, como mencionado anteriormente, nesse momento a grade de pagamento já estava fechada.
 
 Pedimos desculpas por qualquer confusão causada por essa situação. Entendemos que, com base em suas experiências anteriores, você se acostumou a fazer os pagamentos no último momento possível antes do fechamento da grade de pagamentos. No entanto, é importante lembrar que o tempo de processamento pode variar, e sempre recomendamos que você realize os pagamentos com antecedência suficiente para evitar possíveis contratempos.
 
-Para garantir que seus pagamentos sejam processados corretamente, recomendamos que você os inclua em um horário que esteja dentro do período de abertura da grade de pagamentos, ou seja, fora do intervalo de 23:00 às 01:00. Dessa forma, você evitará qualquer rejeição devido ao horário de processamento e garantirá que seus pagamentos sejam processados de forma adequada e oportuna.
+Para garantir que seus pagamentos sejam processados corretamente, recomendamos que você os inclua em um horário que esteja dentro do período de abertura da grade de pagamentos, ou seja, antes do intervalo de 23:00 às 01:00. Dessa forma, você garantirá que haja tempo hábil para o processamento adequado do pagamento e evitará qualquer rejeição devido ao horário de encerramento da grade de pagamentos.
 
 Se você tiver alguma dúvida adicional ou precisar de assistência, por favor, não hesite em nos contatar novamente. Estamos aqui para ajudá-lo(a) da melhor forma possível.
 
