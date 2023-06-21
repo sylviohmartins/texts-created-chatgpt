@@ -1,0 +1,14 @@
+Prezado(a) usuário(a),
+
+Gostaríamos de informar que seu pagamento foi rejeitado devido a uma questão de horário. Analisamos as informações e identificamos que você realizou a inclusão do pagamento no dia 19/06/2023 às 22:59:19. Esse pedido foi autorizado logo em seguida, às 22:59:33, e em seguida foi solicitado para efetivação às 22:59:34 do mesmo dia.
+
+No entanto, o processamento da efetivação só pôde ser iniciado às 23:00:01, momento em que nossa grade de pagamento já estava fechada. Gostaríamos de esclarecer que, entre os horários de 23:00 e 01:00, não é possível realizar o processamento de pagamentos devido a procedimentos internos.
+
+Pedimos desculpas por qualquer inconveniente causado por essa situação. Nossa equipe está ciente do ocorrido e está trabalhando para encontrar soluções que possam evitar esse tipo de problema no futuro.
+
+Para garantir que seu pagamento seja processado corretamente, recomendamos que você efetue a inclusão de um novo pagamento durante os horários em que a grade de pagamento está aberta, ou seja, fora do intervalo de 23:00 às 01:00. Dessa forma, sua transação será processada com sucesso e você evitará qualquer rejeição devido ao horário de processamento.
+
+Caso tenha alguma dúvida adicional ou precise de assistência, por favor, não hesite em nos contatar novamente. Estamos à disposição para ajudá-lo(a) da melhor forma possível.
+
+Atenciosamente,
+Equipe de Suporte
