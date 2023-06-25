@@ -1,0 +1,12 @@
+Prezado(a) atendente,
+
+Gostaríamos de informar que o pagamento do cliente foi rejeitado devido ao horário em que foi realizado. O cliente inseriu o pagamento no dia 19/06/2023 às 22:59:19, e embora tenha sido autorizado às 22:59:33, a efetivação só pôde ser processada às 23:00:01. No entanto, nesse horário a grade de pagamentos já estava fechada, das 23:00 às 01:00.
+
+É importante ressaltar que, para evitar rejeições, recomendamos que os pagamentos sejam realizados antes do fechamento da grade, fora do intervalo de 23:00 às 01:00. Dessa forma, haverá tempo hábil para o processamento adequado.
+
+Pedimos desculpas pela confusão causada. No entanto, é importante mencionar que, na consulta legada, não foi possível localizar o motivo específico da rejeição do pagamento. Reconhecemos que há uma melhoria a ser feita nesse aspecto, a fim de fornecer informações mais detalhadas sobre as rejeições.
+
+Se você tiver alguma dúvida adicional ou precisar de mais informações, por favor, não hesite em nos contatar. Estamos disponíveis para ajudar.
+
+Atenciosamente,
+Equipe de Suporte
