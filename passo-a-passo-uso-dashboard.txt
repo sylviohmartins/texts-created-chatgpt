@@ -1,0 +1,45 @@
+## Uso do Dash no Grafana
+
+O painel do Grafana em questão apresenta métricas relacionadas a diferentes etapas do processo de pagamento de boletos, incluindo inclusão, autorização, efetivação, alteração e cancelamento. Vamos analisar os números pertinentes a cada uma dessas etapas:
+
+### Inclusão de Pagamento
+
+1. `inclusao.count{...}`: Essa métrica retorna o número total de pagamentos de boletos registrados durante a etapa de inclusão.
+
+2. `inclusao.custom.count{canal="(bankline|mobile|legado)", pagamento="(parcial|integral)", banco="(itau|outros_bancos|outros_bancos_online)", operacao="(dia|agendada)", contingencia="true"}`: Essa métrica específica conta os pagamentos de boletos personalizados com base em critérios específicos, durante a etapa de inclusão.
+
+3. `inclusao.custom.sum{...}`: Essa métrica calcula a soma total dos valores associados aos pagamentos de boletos registrados durante a etapa de inclusão.
+
+### Autorização de Pagamento
+
+1. `autorizacao.count{...}`: Essa métrica retorna o número total de pagamentos de boletos autorizados.
+
+2. `autorizacao.custom.count{...}`: Métrica específica para contar os pagamentos de boletos personalizados durante a etapa de autorização.
+
+3. `autorizacao.custom.sum{...}`: Métrica que calcula a soma total dos valores associados aos pagamentos de boletos autorizados.
+
+### Efetivação de Pagamento
+
+1. `efetivacao.count{...}`: Métrica que retorna o número total de pagamentos de boletos efetivados.
+
+2. `efetivacao.custom.count{...}`: Métrica específica para contar os pagamentos de boletos personalizados durante a etapa de efetivação.
+
+3. `efetivacao.custom.sum{...}`: Métrica que calcula a soma total dos valores associados aos pagamentos de boletos efetivados.
+
+### Alteração de Pagamento
+
+1. `alteracao.count{...}`: Métrica que retorna o número total de alterações realizadas em pagamentos de boletos.
+
+2. `alteracao.custom.count{...}`: Métrica específica para contar as alterações personalizadas realizadas em pagamentos de boletos.
+
+3. `alteracao.custom.sum{...}`: Métrica que calcula a soma total dos valores associados às alterações em pagamentos de boletos.
+
+### Cancelamento de Pagamento
+
+1. `cancelamento.count{...}`: Métrica que retorna o número total de cancelamentos de pagamentos de boletos.
+
+2. `cancelamento.custom.count{...}`: Métrica específica para contar os cancelamentos personalizados de pagamentos de boletos.
+
+3. `cancelamento.custom.sum{...}`: Métrica que calcula a soma total dos valores associados aos cancelamentos de pagamentos de boletos.
+
+Essas métricas fornecem informações relevantes sobre cada etapa do processo de pagamento de boletos, permitindo monitorar o desempenho, identificar possíveis problemas e tomar decisões com base nas métricas coletadas. O painel do Grafana pode ser configurado para exibir visualmente essas métricas em gráficos e tabelas, facilitando a análise e compreensão dos dados.
