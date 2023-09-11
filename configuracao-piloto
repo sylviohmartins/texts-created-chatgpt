@@ -1,0 +1,72 @@
+# Configuração do PILOTO!
+
+## Configurar um ConfigMap
+
+Para configurar um ConfigMap no Kubernetes, siga estas etapas:
+
+1. **Crie um ConfigMap**: Comece criando um ConfigMap que conterá seu arquivo de propriedades. Suponha que você tenha um arquivo de propriedades chamado `myapp.properties`. Você pode criar um ConfigMap assim:
+
+```yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myapp-config
+data:
+  myapp.properties: |
+    propriedade1=valor1
+    propriedade2=valor2
+```
+
+2. **Monte o ConfigMap em um Volume**: Em seguida, você deve montar o ConfigMap como um volume em seus pods. Você pode fazer isso em seu arquivo de manifesto de implantação (Deployment) ou em um arquivo de manifesto separado que define o volume e o volumeMount.
+
+```yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-deployment
+spec:
+  containers:
+  - name: myapp-container
+    image: sua-imagem-de-contêiner
+    volumeMounts:
+    - name: config-volume
+      mountPath: /config
+  volumes:
+  - name: config-volume
+    configMap:
+      name: myapp-config
+```
+
+3. **Acesse as Propriedades no Spring Boot**: Agora, você pode acessar as propriedades em seu aplicativo Spring Boot. Configure seu aplicativo Spring Boot para ler as propriedades do arquivo montado, utilizando a anotação `@PropertySource` no seu código:
+
+```java
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import lombok.Getter;
+
+@Configuration
+@PropertySource(value = "file:/config/myapp.properties", ignoreResourceNotFound = true)
+@Getter
+public class AppConfig {
+    
+    @Value("${propriedade1}")
+    private String propriedade1;
+    
+    @Value("${propriedade2}")
+    private String propriedade2;
+    
+}
+```
+
+## Validar a criação do arquivo no container
+
+Para verificar se um arquivo foi criado em um container usando o `kubectl`, siga estas etapas:
+
+1.**Execute um Comando no Container**: Use o comando `kubectl exec` para executar um comando dentro do container e verificar a existência do arquivo. Por exemplo, para verificar se o arquivo `myapp.properties` foi criado em um pod chamado `myapp-pod`, você pode usar o seguinte comando:
+
+```bash
+kubectl exec -it myapp-pod -- ls /caminho/para/o/arquivo/myapp.properties
+```
+
+> **_NOTE:_**  Certifique-se de substituir `/caminho/para/o/arquivo/` pelo caminho real onde o arquivo `myapp.properties` deve estar dentro do container.
