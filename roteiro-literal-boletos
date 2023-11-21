@@ -1,0 +1,25 @@
+## Apresentação
+E aí, pessoal! Beleza? Bora falar do que aprontamos nessa sprint!
+
+## Item 01: Criação de Nova Literal:
+Primeira parada, criamos uma literal novinha em folha. Olha só essa belezinha (mostra a nova literal). Mais intuitivo, né? Vai facilitar a vida de todo mundo.
+
+## Item 02: Infraestrutura - Configmap no EKS:
+Agora, na infra, fizemos uma mágica com um 'configmap' no EKS. Olhem só (mostra na tela). Gerenciamento do piloto mais organizado, com segmento, agências, contas... tudo no esquema.
+
+## Item 03: Refatoração do Processo de Definição de Literal:
+Partimos pro código! Deu tapa no processo de definir literal nas aplicações pra padronizar tudo. Agora, literal é tudo igualzinho, sem confusão. Consistência pura (mostra um pedaço do código).
+
+## Item 04: Implementação e Padronização de Testes:
+E tem mais! Colocamos uma armada de testes. Testes unitários, funcionais e integrados - tudo no pacote. Agora, nossa plataforma tá blindada contra bugs!
+
+## Conclusão
+Recapitulando, literal nova, infra organizada, código padronizado e testes pra garantir que tá tudo nos eixos.
+
+Vantagens? Usabilidade lá no alto, manutenção mais fácil que fazer miojo e a plataforma toda na mesma batida.
+
+## Perguntas e Discussões:
+Então, quem tem perguntas ou quer bater um papo? A arena é de vocês!
+
+## Encerramento:
+Beleza, pessoal! Valeu demais pela atenção. Bora botar isso em prática e seguir a dança. Até a próxima sprint, galera!
