@@ -1,0 +1,57 @@
+Claro, aqui estão as correções:
+
+## Apresentação
+E aí, pessoal! Hoje vamos compartilhar os avanços na efetivação de agendamentos de tributos com código de barras (DARF) e outras novidades. Preparados? Vamos lá!
+
+## EFETIVAÇÃO
+
+### Recebendo os Pagamentos Agendados
+Implementamos um fluxo para processar pagamentos agendados do mainframe na AWS.
+
+### Solicitando a Efetivação
+Criamos um processo automatizado para efetivar pagamentos junto ao sistema R1.
+
+### Consumindo a Resposta da Solicitação
+Desenvolvemos a integração para processar as respostas de efetivação.
+
+### Publicando Eventos Corporativos
+Publicamos os eventos dos pagamentos nos tópicos corporativos para manter todos informados.
+
+### Testes Implementados
+Desenvolvemos testes unitários e TAAC para garantir o funcionamento correto.
+
+## CONVIVÊNCIA
+
+### Recebendo Eventos de Efetivação
+Consumimos eventos de efetivação na plataforma AWS para atualizar o sistema.
+
+### Publicando Eventos de Efetivação
+Publicamos eventos de efetivação para manter os dados atualizados no mainframe.
+
+### Testes Implementados
+Desenvolvemos testes unitários e TAAC para garantir a qualidade da convivência dos eventos.
+
+## DADOS
+
+### Acesso Segregado aos Dados do Pagamento
+Segregamos o acesso aos dados do pagamento através de uma API para maior segurança e performance.
+
+### Controle de Duplicidade
+Implementamos um controle para evitar pagamentos duplicados e manter a integridade dos dados.
+
+## OBSERVABILIDADE
+
+### Monitoramento dos Dados do Negócio
+Monitoramos os dados do negócio com métricas customizadas no Grafana.
+
+### Monitoramento da Saúde dos Recursos
+Monitoramos a saúde dos recursos na AWS para garantir o funcionamento adequado.
+
+## Conclusão
+Recapitulando:
+1. Implementamos a efetivação de agendamentos de tributos na AWS.
+2. Automatizamos o processo de efetivação junto ao sistema R1.
+3. Garantimos a integridade dos dados e a qualidade dos eventos.
+4. Melhoramos a segurança e observabilidade do sistema.
+
+Vamos seguir em frente e implementar essas melhorias. Até a próxima sprint!
