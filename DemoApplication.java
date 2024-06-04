@@ -14,7 +14,6 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +27,7 @@ import java.lang.annotation.Target;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @SpringBootApplication
 @ComponentScan(basePackages = "br.com.sylviomartins.spring.aop.demo.aspect.test")
 public class DemoApplication {
@@ -48,15 +48,9 @@ public class DemoApplication {
         }
 
         @GetMapping("/person/{id}")
-        public String getPerson(@PathVariable int id) {
-            return myService.create(new Person(id, "Mocked", "Person", 30));
+        public String getPerson(@PathVariable int id) throws JsonProcessingException {
+            return myService.toJson(new Person(id, "Mocked", "Person", 30), new Person(id, "Mocked", "Person", 123));
         }
-
-    }
-
-    @Configuration
-    @EnableAspectJAutoProxy(proxyTargetClass = true)
-    public class AspectConfiguration {
 
     }
 
@@ -66,17 +60,14 @@ public class DemoApplication {
 
         private final ObjectMapper objectMapper;
 
-        public String create(Person person) {
-            return toJson(person);
+        public String create(Person person) throws JsonProcessingException {
+            return toJson(person, null);
         }
 
         @LogExecution("a criacao de uma pessoa")
-        public String toJson(Person person) {
-            try {
-                return objectMapper.writeValueAsString(person);
-            } catch (JsonProcessingException e) {
-                return null;
-            }
+        public String toJson(Person p1, Person p2) throws JsonProcessingException {
+//            throw new IllegalArgumentException("");
+            return objectMapper.writeValueAsString(p1);
         }
 
     }
@@ -113,13 +104,14 @@ public class DemoApplication {
             }
         }
 
-        @Around("execution(* *..toJson*(..))")
-        public Object xptoAspect(ProceedingJoinPoint joinPoint) throws Throwable {
+//        @Around("execution(* *..toJson*(..))")
+        @Around("execution(* br.com.sylviomartins..*toJson*(..))")
+        public Object toJsonAspect(ProceedingJoinPoint joinPoint) throws Throwable {
             final MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
             final Class<?> inputType = getInputType(methodSignature);
             final Class<?> outputType = getOutputType(methodSignature);
 
-            String message = buildConversionMessage(inputType, outputType);
+            final String message = buildConversionMessage(inputType, outputType);
 
             try {
                 Object result = joinPoint.proceed();
@@ -129,18 +121,16 @@ public class DemoApplication {
                 return result;
 
             } catch (Exception exception) {
-                return null;
+                throw exception;
             }
         }
 
         private Class<?> getInputType(MethodSignature methodSignature) {
-            return methodSignature.getParameterTypes().length > 0 ?
-                    methodSignature.getParameterTypes()[0] : null;
+            return methodSignature.getParameterTypes().length > 0 ? methodSignature.getParameterTypes()[0] : null;
         }
 
         private Class<?> getOutputType(MethodSignature methodSignature) {
-            return methodSignature.getReturnType() != void.class ?
-                    methodSignature.getReturnType() : null;
+            return methodSignature.getReturnType() != void.class ? methodSignature.getReturnType() : null;
         }
 
         private String buildConversionMessage(Class<?> inputType, Class<?> outputType) {
@@ -159,7 +149,7 @@ public class DemoApplication {
                 return objectMapper.writeValueAsString(args);
 
             } catch (JsonProcessingException e) {
-                return null;
+                return "null";
             }
         }
 
