@@ -1,83 +1,11 @@
-package br.com.sylviomartins.spring.aop.demo.aspect.test;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-@EnableAspectJAutoProxy(proxyTargetClass = true)
-@SpringBootApplication
-@ComponentScan(basePackages = "br.com.sylviomartins.spring.aop.demo.aspect.test")
-public class DemoApplication {
-
-    public static void main(String[] args) {
-        System.setProperty("spring.profiles.active", "test");
-
-        SpringApplication.run(DemoApplication.class, args);
-    }
-
-    @RestController
-    public static class MyController {
-
-        private final MyService myService;
-
-        public MyController(MyService myService) {
-            this.myService = myService;
-        }
-
-        @GetMapping("/person/{id}")
-        public String getPerson(@PathVariable int id) throws JsonProcessingException {
-            return myService.toJson(new Person(id, "Mocked", "Person", 30), new Person(id, "Mocked", "Person", 123));
-        }
-
-    }
-
-    @RequiredArgsConstructor
-    @Component
-    public static class MyService {
-
-        private final ObjectMapper objectMapper;
-
-        public String create(Person person) throws JsonProcessingException {
-            return toJson(person, null);
-        }
-
-        @LogExecution("a criacao de uma pessoa")
-        public String toJson(Person p1, Person p2) throws JsonProcessingException {
-//            throw new IllegalArgumentException("");
-            return objectMapper.writeValueAsString(p1);
-        }
-
-    }
-
-    @RequiredArgsConstructor
+@RequiredArgsConstructor
     @Aspect
     @Component
     public static class MyAspect {
 
         private static final Logger LOGGER = Logger.getLogger(MyAspect.class.getName());
+
+        private static final ThreadLocal<String> codeThreadLocal = new ThreadLocal<>();
 
         private final ObjectMapper objectMapper;
 
@@ -88,10 +16,14 @@ public class DemoApplication {
             final Object[] args = joinPoint.getArgs();
             final String argsString = toString(args);
 
+            codeThreadLocal.set(logExecution.code());
+
             try {
                 LOGGER.log(Level.INFO, "EXECUTANDO {0}...: {1}", new Object[]{message, argsString});
 
                 Object result = joinPoint.proceed();
+
+                codeThreadLocal.remove();
 
                 LOGGER.log(Level.INFO, "SUCESSO ao executar {0}!: {1}", new Object[]{message, argsString});
 
@@ -115,6 +47,9 @@ public class DemoApplication {
 
             try {
                 Object result = joinPoint.proceed();
+
+                final String codeFromLogExecution = codeThreadLocal.get();
+                System.out.println(codeFromLogExecution);
 
                 LOGGER.log(Level.INFO, message, result);
 
@@ -164,20 +99,3 @@ public class DemoApplication {
         String value() default "";
 
     }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Person {
-
-        private int id;
-
-        private String firstName;
-
-        private String lastName;
-
-        private int age;
-
-    }
-
-}
