@@ -1,0 +1,130 @@
+# Análise Comparativa de Benchmark: API Modular vs. API Não Modular
+
+## Introdução
+
+Este relatório apresenta uma análise comparativa dos tempos de build e inicialização (startup) entre duas abordagens de desenvolvimento de API com Spring Boot 3.4.5 e Java 21: uma API com estrutura Maven modular e outra API com estrutura não modular (monolítica, mas com pacotes espelhando os módulos da primeira).
+
+O objetivo deste benchmark foi quantificar o impacto da modularização Maven nos tempos de compilação e inicialização da aplicação.
+
+## Metodologia
+
+Ambos os projetos foram configurados com as seguintes características:
+- Java 21
+- Spring Boot 3.4.5
+- Dependência base: `spring-boot-starter-web`
+- Um endpoint "Hello World" simples.
+
+Para cada projeto, foram realizadas 5 execuções de build (`mvn clean install`) e 5 execuções de inicialização da aplicação. Os tempos foram registrados e as médias calculadas para comparação.
+
+## Resultados do Benchmark
+
+Os tempos médios obtidos foram os seguintes:
+
+| Métrica         | API Modular (média de 5 execuções) | API Não Modular (média de 5 execuções) |
+|-----------------|------------------------------------|----------------------------------------|
+| Tempo de Build  | 5.5186 segundos                    | 4.3970 segundos                        |
+| Tempo de Start  | 4.6676 segundos                    | 2.2718 segundos                        |
+
+### Detalhamento dos Tempos (extraído de `benchmark_results.txt`):
+
+**API Modular:**
+-   **Tempos de Build:** 5.787s, 5.613s, 5.273s, 5.440s, 5.480s
+-   **Tempos de Start:** 4.645s, 4.648s, 4.774s, 4.606s, 4.665s
+
+**API Não Modular:**
+-   **Tempos de Build:** 4.392s, 4.344s, 4.428s, 4.403s, 4.418s
+-   **Tempos de Start:** 2.395s, 2.448s, 2.255s, 2.127s, 2.134s
+
+## Análise e Discussão
+
+Os resultados indicam que a **API Não Modular apresentou tempos de build e inicialização significativamente menores** em comparação com a API Modular.
+
+-   **Tempo de Build:** A API Não Modular foi, em média, aproximadamente **1.12 segundos mais rápida** para compilar do que a API Modular. Isso pode ser atribuído ao overhead introduzido pela estrutura Maven modular. No projeto modular, o Maven precisa processar múltiplos arquivos `pom.xml` (um para o pai e um para cada módulo), resolver dependências intermodulares e compilar cada módulo separadamente antes de agregá-los. O projeto não modular, por outro lado, possui um único `pom.xml` e um ciclo de compilação mais direto.
+
+-   **Tempo de Start:** A diferença no tempo de inicialização foi ainda mais pronunciada. A API Não Modular iniciou, em média, aproximadamente **2.39 segundos mais rápido** que a API Modular. Durante a inicialização, o Spring Boot precisa escanear componentes, configurar beans e estabelecer o contexto da aplicação. Em uma estrutura modular, mesmo com um `@ComponentScan` bem definido, pode haver um overhead adicional na descoberta e fiação de beans distribuídos por diferentes módulos JAR. A API não modular, com todos os componentes no mesmo classpath principal (mesmo que em pacotes diferentes), tende a ter um processo de inicialização mais otimizado para cenários simples como o testado.
+
+## Considerações Adicionais
+
+É importante ressaltar que, embora a API Não Modular tenha demonstrado melhor performance nos quesitos de build e startup neste benchmark específico (com uma aplicação muito simples), a escolha entre uma arquitetura modular e não modular envolve outros fatores cruciais, especialmente à medida que a complexidade do projeto aumenta:
+
+-   **Manutenibilidade e Organização:** Projetos modulares tendem a ser mais fáceis de manter e entender, pois promovem uma separação clara de responsabilidades e encapsulamento. Cada módulo pode ser desenvolvido, testado e versionado de forma mais independente.
+-   **Escalabilidade da Equipe:** Em equipes maiores, a modularização permite que diferentes times trabalhem em módulos distintos com menor acoplamento e risco de conflitos.
+-   **Reusabilidade:** Módulos bem definidos podem ser reutilizados em outros projetos.
+-   **Builds Incrementais:** Em projetos modulares, o Maven pode otimizar builds recompilando apenas os módulos que foram alterados e seus dependentes, o que pode ser vantajoso em projetos grandes.
+
+Para aplicações pequenas e com escopo bem definido, o overhead da modularização pode não justificar os benefícios. No entanto, para sistemas complexos e de longa duração, os ganhos em organização, manutenibilidade e escalabilidade da arquitetura modular frequentemente superam o custo inicial em termos de tempos de build e startup.
+
+## Conclusão
+
+O benchmark demonstrou que, para uma aplicação Spring Boot simples com um endpoint "Hello World", a abordagem não modular resulta em tempos de build e inicialização mais rápidos. A modularização Maven, embora traga benefícios arquiteturais significativos para projetos maiores, introduz um overhead perceptível nesses dois aspectos. A decisão de adotar uma estrutura modular deve, portanto, ponderar esses custos de performance iniciais contra os benefícios de longo prazo em termos de desenvolvimento e manutenção do software.
+
+## Fontes
+
+--- Benchmark Results ---
+
+=== Modular API - Build Times ===
+
+Run 1:
+Build Time (script): 5.787 s
+
+Run 2:
+Build Time (script): 5.613 s
+
+Run 3:
+Build Time (script): 5.273 s
+
+Run 4:
+Build Time (script): 5.440 s
+
+Run 5:
+Build Time (script): 5.480 s
+
+
+=== Modular API - Start Times ===
+
+Run 1:
+Startup Time: 4.645 s
+Run 2:
+Startup Time: 4.648 s
+Run 3:
+Startup Time: 4.774 s
+Run 4:
+Startup Time: 4.606 s
+Run 5:
+Startup Time: 4.665 s
+
+
+=== Non-Modular API - Build Times ===
+
+Run 1:
+Build Time (script): 4.392 s
+
+Run 2:
+Build Time (script): 4.344 s
+
+Run 3:
+Build Time (script): 4.428 s
+
+Run 4:
+Build Time (script): 4.403 s
+
+Run 5:
+Build Time (script): 4.418 s
+
+
+=== Non-Modular API - Start Times ===
+
+Run 1:
+Startup Time: 2.395 s
+
+Run 2:
+Startup Time: 2.448 s
+
+Run 3:
+Startup Time: 2.255 s
+
+Run 4:
+Startup Time: 2.127 s
+
+Run 5:
+Startup Time: 2.134 s
