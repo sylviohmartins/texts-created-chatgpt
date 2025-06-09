@@ -1,0 +1,59 @@
+Guia de Preparação para Entrevista Interna - Desenvolvedor Sênior (Itaú)
+I. Entenda o Propósito da Entrevista e o Contexto da Vaga
+ * Seu Objetivo Principal: Posicionar-se fortemente para a vaga de Desenvolvedor Sênior, destacando seu aprofundamento técnico e sua paixão por 'colocar a mão na massa'.
+ * A Vantagem de Ser Interno: Você já conhece a cultura do Itaú, processos internos e ferramentas.
+ * Pesquisa Essencial sobre a Nova Squad/Área: Tente conversar com alguém da squad para entender:
+   * Principais desafios técnicos e roadmap atual.
+   * Tecnologias específicas utilizadas.
+   * Metodologias de trabalho e como o Tech Lead se encaixa.
+II. Prepare Suas Respostas para as Perguntas Chave
+Perguntas Gerais (Adaptadas ao Contexto Interno e Seu Foco)
+ * "Por que você está interessado nesta migração para esta área/squad aqui no Itaú?"
+   "Interesso-me por esta área pela oportunidade de aprofundar minha atuação técnica. Pelos desafios em [mencione um desafio técnico que você pesquisou ou que é comum no Itaú, ex: escalabilidade de APIs, otimização de performance], vejo um alinhamento com minha paixão por desenvolvimento e resolução de problemas. Quero continuar entregando valor no código e na performance, usando minha experiência em Java, Spring Boot e AWS, como um desenvolvedor sênior 'mão na massa'."
+ * "O que você busca nesta nova posição? O que te atrai?"
+   "Busco focar na parte técnica: codificar soluções complexas, otimizá-las para alta performance e garantir a sustentabilidade do código. O que me atrai é a chance de continuar aprendendo e aplicando as últimas tendências em Java e arquitetura cloud-native, contribuindo diretamente para o produto. Meu objetivo é ser uma referência técnica, um desenvolvedor sênior que contribui ativamente com o código e ajuda a equipe a construir excelência."
+ * "Como você se relaciona com outros desenvolvedores e como você ajuda a equipe a crescer tecnicamente?"
+   "Sou muito colaborativo e acredito na troca de conhecimento. Em projetos como SISPAG e Boletos, participo ativamente de code reviews e, quando possível, faço pair programming para resolver desafios. Gosto de mentorar colegas mais novos, explicando conceitos e boas práticas de clean code. Compartilho insights e busco aprender com a equipe, sempre visando elevar o nível técnico coletivo e garantir soluções robustas."
+ * "Quais foram os maiores desafios técnicos que você enfrentou nos projetos atuais aqui no Itaú e como você os superou?"
+   "No projeto de Contratos, um desafio técnico foi otimizar a performance de consultas que retornavam muitos dados. Superamos isso ajustando índices no Amazon RDS (PostgreSQL), implementando paginação inteligente na API e otimizando o código Spring Boot. O resultado foi uma latência reduzida e maior capacidade de requisições, o que reforçou a importância de um design robusto e otimização contínua para o Itaú."
+ * "Como você se mantém atualizado com as tendências de tecnologia, especialmente as que são relevantes para o contexto do Itaú?"
+   "Mantenho-me atualizado ativamente: estudo novas features do Java (como o Java 21), acompanho blogs especializados em AWS e microsserviços, e participo de webinars. Gosto de testar essas novidades em protótipos para entender sua aplicação prática. Também participo de comunidades de prática internas do Itaú, trocando experiências sobre as últimas tendências para garantir soluções modernas e eficientes."
+A Resposta Chave: Como "Negar" a Vaga de Tech Lead
+"Agradeço muito a consideração para a posição de Tech Lead. Entendo a importância desse papel para guiar o time e garantir a qualidade. No entanto, neste momento da minha carreira, minha paixão e meu maior desejo é focar na profundidade técnica e na implementação direta das soluções. Eu realmente amo 'colocar a mão na massa', resolver problemas complexos de código e otimizar sistemas.
+Acredito que, por agora, meu maior impacto para a equipe e para o Itaú será como um Desenvolvedor Sênior de referência, contribuindo ativamente com código de alta qualidade e elevando a barra técnica do time através de code reviews e mentoria hands-on em aspectos puramente técnicos.
+Vejo a liderança formal como um caminho para o futuro, mas hoje, minha prioridade é a excelência como engenheiro de software."
+Perguntas Técnicas Aprofundadas (Com Linguagem Humanizada e Foco no Dev Sr.)
+ * "Qual solução você daria para uma API que recebe milhares de consultas e retorna muitos dados (payload grande)? Que banco usaria e o que implementaria?"
+   "Pra uma API que precisa aguentar milhares de consultas e ainda devolver muitos dados, como 'mil linhas', a gente tem que pensar numa arquitetura bem robusta.
+   * Minha solução principal:
+     * A 'Porta de Entrada' (API Gateway): Usaria o API Gateway na AWS. Ele é ótimo pra controlar quem acessa (segurança), evitar sobrecarga (throttling) e o melhor: tem cache.
+     * O 'Coração' da API (AWS Lambda ou ECS com Fargate): Eu iria de AWS Lambda com Java 21+ e Virtual Threads. Porque o Lambda escala muito rápido, e as Virtual Threads otimizam como a API lida com várias requisições ao mesmo tempo.
+     * O Banco de Dados (Amazon Aurora PostgreSQL com Réplicas de Leitura): Para retornar 'mil linhas' com dados que podem ter relacionamentos complexos, eu escolheria o Amazon Aurora compatível com PostgreSQL. Ele é um banco relacional gerenciado que aguenta muito volume. O segredo são as Réplicas de Leitura: a maioria das consultas (que são de leitura) iriam pra essas 'cópias' do banco, distribuindo a carga e aguentando milhões de requisições.
+   * O que eu implementaria para otimizar isso:
+     * Paginação: É fundamental! A API não pode devolver mil linhas de uma vez. Ela paginaria, tipo 100 linhas por requisição.
+     * Cache Estratégico (Redis): Além do cache no API Gateway, usaria um Amazon ElastiCache com Redis para guardar resultados de consultas mais comuns.
+     * Otimização de Consultas: Garantiria que as consultas SQL no Aurora fossem rápidas, com índices certos e retornando só o necessário.
+     * Compressão: Usaria compressão (GZIP) na resposta HTTP pra diminuir o volume de dados na rede."
+ * "Fale sobre sua experiência com bancos de dados. Quando usaria DynamoDB e quando optaria por um relacional como RDS PostgreSQL?"
+   "Minha experiência inclui o Amazon DynamoDB e o Amazon RDS com PostgreSQL, além de Oracle e Informix em outros projetos.
+   * Eu usaria DynamoDB quando a gente precisa de performance extrema e escala gigante para acesso por chave ou queries mais simples, e com um modelo de dados flexível. É o caso em SISPAG e Boletos, onde o acesso rápido por um ID é crucial e o volume é enorme.
+   * Já o Amazon RDS (PostgreSQL) seria a escolha quando os dados são mais complexos e relacionais, exigindo transações seguras (ACID) e consultas SQL mais elaboradas. No projeto de Contratos, por exemplo, onde a integridade e os relacionamentos dos dados contratuais são críticos, o PostgreSQL se encaixa perfeitamente.
+     A decisão depende sempre do que o dado representa e de como a gente precisa acessá-lo. Não tem um 'melhor' banco, mas sim o mais adequado para cada cenário específico do Itaú."
+Sua Pergunta Estratégica para o Final da Entrevista:
+"Entendendo melhor o papel de Desenvolvedor Sênior e os desafios técnicos da squad, tenho uma pergunta para vocês:
+'Quais são os maiores desafios técnicos que a equipe enfrenta atualmente e como um Desenvolvedor Sênior 'mão na massa' poderia fazer a maior diferença para superá-los nos próximos meses?'"
+III. Perguntas Estratégicas para o Entrevistador (Sua Vez de Perguntar)
+Sobre o Dia a Dia e Projetos:
+ * "Como é um dia típico de trabalho para um desenvolvedor sênior nesta squad? Que tipo de desafios técnicos são mais comuns no dia a dia?"
+ * "Quais são os principais projetos que a squad está trabalhando atualmente ou planeja iniciar em breve? Há algo específico que me empolgaria a 'colocar a mão na massa'?"
+ * "Como vocês equilibram a entrega de novas funcionalidades com a manutenção, refatoração e a dívida técnica?"
+ * "Qual é o ciclo de vida do desenvolvimento de software na equipe? Desde a ideia até a produção, como as coisas acontecem?"
+Sobre a Composição e Cultura da Equipe:
+ * "Como é a composição atual da equipe em termos de senioridade (juniores, plenos, sêniores) e que tipo de perfis vocês buscam para complementar o time?"
+ * "Como a equipe promove a troca de conhecimento e o crescimento técnico entre os desenvolvedores? Há code reviews estruturados, tech talks internas ou algo nesse sentido?"
+ * "Qual o papel do Tech Lead na equipe? Como ele se integra com os desenvolvedores sêniores e com outras funções como Product Owner e Scrum Master?"
+ * "Como a squad lida com divergências técnicas ou decisões de arquitetura? Há um processo de discussão e consenso ou as decisões são mais centralizadas?"
+ * "Em um ambiente de trabalho remoto/híbrido (se aplicável), como a equipe mantém a comunicação e o engajamento?"
+Sobre Desafios e Futuro:
+ * "Quais são os maiores desafios que a equipe enfrenta hoje, do ponto de vista técnico ou operacional, e como um Desenvolvedor Sênior poderia fazer a maior diferença para superá-los nos próximos meses?"
+ * "Como vocês medem o sucesso da squad e o impacto do trabalho dos desenvolvedores no Itaú?"
