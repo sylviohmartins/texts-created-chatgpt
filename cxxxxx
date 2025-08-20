@@ -1,0 +1,231 @@
+package com.example.avrojson;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.*;
+import org.apache.avro.LogicalType;
+import org.apache.avro.LogicalTypes;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.generic.GenericRecord;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneOffset;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.Map;
+
+/**
+ * Conversor simples de Avro GenericRecord para JSON (String compacta).
+ *
+ * - Omitimos campos nulos.
+ * - Unions sem wrapper (resolve automaticamente o ramo).
+ * - Suporte a logical types: date, time-millis, time-micros, timestamp-millis,
+ *   timestamp-micros e decimal.
+ * - bytes/fixed em Base64.
+ *
+ * Dependências:
+ *   - org.apache.avro:avro
+ *   - com.fasterxml.jackson.core:jackson-databind
+ */
+public final class GenericRecordJson {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    // withExactBigDecimals(boolean) está deprecated → usar builder()
+    private static final JsonNodeFactory F = JsonNodeFactory.builder()
+            .setExactBigDecimals(true)
+            .build();
+
+    private GenericRecordJson() {}
+
+    /** Converte um GenericRecord em JSON compacto (String). */
+    public static String toJson(GenericRecord record) {
+        if (record == null) throw new IllegalArgumentException("record null");
+        try {
+            JsonNode node = write(record.getSchema(), record);
+            return MAPPER.writeValueAsString(node);
+        } catch (Exception e) {
+            throw new IllegalStateException("Falha ao converter GenericRecord para JSON", e);
+        }
+    }
+
+    // ================= núcleo =================
+
+    private static JsonNode write(Schema schema, Object value) {
+        if (schema == null) return NullNode.getInstance();
+
+        // Unions
+        if (schema.getType() == Schema.Type.UNION) {
+            return writeUnion(schema, value);
+        }
+
+        // Nulls
+        if (value == null) {
+            return NullNode.getInstance();
+        }
+
+        // Logical types primeiro
+        LogicalType lt = schema.getLogicalType();
+        if (lt != null) {
+            JsonNode n = tryWriteLogical(schema, lt, value);
+            if (n != null) return n;
+        }
+
+        switch (schema.getType()) {
+            case RECORD:   return writeRecord(schema, value);
+            case ARRAY:    return writeArray(schema, value);
+            case MAP:      return writeMap(schema, value);
+            case ENUM:     return new TextNode(value.toString());
+            case FIXED:    return writeFixed(value);
+            case BYTES:    return writeBytes(value);
+            case STRING:   return new TextNode(value.toString());
+            case INT:      return new IntNode(((Number) value).intValue());
+            case LONG:     return new LongNode(((Number) value).longValue());
+            case FLOAT:    return new FloatNode(((Number) value).floatValue());
+            case DOUBLE:   return new DoubleNode(((Number) value).doubleValue());
+            case BOOLEAN:  return BooleanNode.valueOf((Boolean) value);
+            case NULL:     return NullNode.getInstance();
+            default:
+                throw new UnsupportedOperationException("Tipo Avro não suportado: " + schema.getType());
+        }
+    }
+
+    private static ObjectNode writeRecord(Schema schema, Object value) {
+        if (!(value instanceof GenericRecord)) {
+            throw new IllegalArgumentException("Esperado GenericRecord, veio: " + value.getClass());
+        }
+        GenericRecord rec = (GenericRecord) value;
+        ObjectNode obj = F.objectNode();
+
+        for (Schema.Field f : schema.getFields()) {
+            Object fv = rec.get(f.pos());
+            if (fv == null) continue; // omite nulos
+            obj.set(f.name(), write(f.schema(), fv));
+        }
+        return obj;
+    }
+
+    private static ArrayNode writeArray(Schema schema, Object value) {
+        if (!(value instanceof Collection<?>)) {
+            throw new IllegalArgumentException("ARRAY espera Collection, veio: " + value.getClass());
+        }
+        ArrayNode arr = F.arrayNode();
+        Schema elem = schema.getElementType();
+        for (Object it : (Collection<?>) value) {
+            arr.add(write(elem, it));
+        }
+        return arr;
+    }
+
+    private static ObjectNode writeMap(Schema schema, Object value) {
+        if (!(value instanceof Map<?, ?>)) {
+            throw new IllegalArgumentException("MAP espera Map, veio: " + value.getClass());
+        }
+        ObjectNode obj = F.objectNode();
+        Schema vSchema = schema.getValueType();
+        Map<?, ?> map = (Map<?, ?>) value;
+        for (Map.Entry<?, ?> e : map.entrySet()) {
+            String k = String.valueOf(e.getKey());
+            obj.set(k, write(vSchema, e.getValue()));
+        }
+        return obj;
+    }
+
+    private static JsonNode writeUnion(Schema union, Object value) {
+        if (value == null) return NullNode.getInstance();
+        int idx = GenericData.get().resolveUnion(union, value);
+        Schema branch = union.getTypes().get(idx);
+        return write(branch, value);
+    }
+
+    private static JsonNode writeFixed(Object value) {
+        final byte[] bytes;
+        if (value instanceof GenericData.Fixed) {
+            bytes = ((GenericData.Fixed) value).bytes();
+        } else if (value instanceof byte[]) {
+            bytes = (byte[]) value;
+        } else {
+            throw new IllegalArgumentException("FIXED espera GenericData.Fixed/byte[]");
+        }
+        return new TextNode(Base64.getEncoder().encodeToString(bytes));
+    }
+
+    private static JsonNode writeBytes(Object value) {
+        final ByteBuffer bb = (value instanceof ByteBuffer)
+                ? (ByteBuffer) value
+                : ByteBuffer.wrap((byte[]) value);
+        ByteBuffer dup = bb.duplicate();
+        byte[] bytes = new byte[dup.remaining()];
+        dup.get(bytes);
+        return new TextNode(Base64.getEncoder().encodeToString(bytes));
+    }
+
+    // ================= logical types =================
+
+    private static JsonNode tryWriteLogical(Schema schema, LogicalType lt, Object value) {
+        switch (lt.getName()) {
+            case "date": {
+                int days = ((Number) value).intValue();
+                return new TextNode(LocalDate.ofEpochDay(days).toString()); // yyyy-MM-dd
+            }
+            case "time-millis": {
+                int ms = ((Number) value).intValue();
+                LocalTime t = LocalTime.ofNanoOfDay(ms * 1_000_000L);
+                return new TextNode(t.toString()); // HH:mm:ss.SSS
+            }
+            case "time-micros": {
+                long micros = ((Number) value).longValue();
+                LocalTime t = LocalTime.ofNanoOfDay(micros * 1_000L);
+                return new TextNode(t.toString()); // HH:mm:ss.SSSSSS
+            }
+            case "timestamp-millis": {
+                long ms = ((Number) value).longValue();
+                return new TextNode(Instant.ofEpochMilli(ms).atOffset(ZoneOffset.UTC).toString());
+            }
+            case "timestamp-micros": {
+                long micros = ((Number) value).longValue();
+                long sec = micros / 1_000_000L;
+                long nano = (micros % 1_000_000L) * 1_000L;
+                return new TextNode(Instant.ofEpochSecond(sec, nano).atOffset(ZoneOffset.UTC).toString());
+            }
+            case "decimal": {
+                BigDecimal bd = toBigDecimal(schema, value);
+                return new TextNode(bd.toPlainString()); // string para preservar precisão
+            }
+            default:
+                return null; // deixa o fluxo padrão tratar
+        }
+    }
+
+    private static BigDecimal toBigDecimal(Schema schema, Object value) {
+        LogicalTypes.Decimal dec = (LogicalTypes.Decimal) schema.getLogicalType();
+        if (value instanceof ByteBuffer) {
+            ByteBuffer bb = ((ByteBuffer) value).duplicate();
+            byte[] bytes = new byte[bb.remaining()];
+            bb.get(bytes);
+            return decimalFromBytes(bytes, dec.getScale());
+        } else if (value instanceof GenericData.Fixed) {
+            byte[] bytes = ((GenericData.Fixed) value).bytes();
+            return decimalFromBytes(bytes, dec.getScale());
+        } else if (value instanceof byte[]) {
+            return decimalFromBytes((byte[]) value, dec.getScale());
+        } else if (value instanceof BigDecimal) {
+            return (BigDecimal) value;
+        } else if (value instanceof BigInteger) {
+            return new BigDecimal((BigInteger) value, dec.getScale());
+        } else if (value instanceof Number) {
+            return BigDecimal.valueOf(((Number) value).longValue(), dec.getScale());
+        }
+        throw new IllegalArgumentException("decimal com valor inesperado: " + value.getClass());
+    }
+
+    private static BigDecimal decimalFromBytes(byte[] bytes, int scale) {
+        // Avro usa complemento de dois para decimais em bytes
+        return new BigDecimal(new BigInteger(bytes), scale);
+    }
+}
